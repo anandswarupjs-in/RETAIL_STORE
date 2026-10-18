@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}{% block heading %}Welcome{% endblock %}
+{% block content %}
+<section class="panel login-panel"><div class="login-icon">R</div><h2>RetailFlow</h2><p>This student project currently uses a local admin workspace without authentication.</p><div class="callout">Login is intentionally not wired to fake credentials. Add real authentication only if it is required for your evaluation.</div><a class="btn btn-primary w-100 mt-3" href="{{ url_for('dashboard') }}">Open dashboard</a></section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}{% block heading %}Dashboard{% endblock %}
+{% block content %}
+<div class="welcome-panel"><div><span class="pill pill-light">STORE OVERVIEW</span><h2>Your store, at a glance.</h2><p>Track products, stock levels and completed sales from one place.</p></div><div class="welcome-mark">RF</div></div>
+{% if stats %}
+<div class="stats-grid">
+  <div class="stat-card"><span class="stat-label">Total products</span><div class="stat-value">{{ stats.products }}</div><span class="stat-foot">Catalog items</span></div>
+  <div class="stat-card"><span class="stat-label">Customers</span><div class="stat-value">{{ stats.customers }}</div><span class="stat-foot">Registered customers</span></div>
+  <div class="stat-card"><span class="stat-label">Inventory units</span><div class="stat-value">{{ stats.stock_units }}</div><span class="stat-foot">Across all products</span></div>
+  <div class="stat-card"><span class="stat-label">Completed revenue</span><div class="stat-value">{{ stats.revenue|inr }}</div><span class="stat-foot">Completed orders only</span></div>
+</div>
+<div class="stats-grid stats-grid-small">
+  <div class="stat-card compact"><span class="stat-label">Employees</span><div class="stat-value">{{ stats.employees }}</div></div>
+  <div class="stat-card compact"><span class="stat-label">Products needing attention</span><div class="stat-value {% if stats.low_stock %}text-danger{% endif %}">{{ stats.low_stock }}</div></div>
+</div>
+{% endif %}
+<div class="content-grid">
+  <section class="panel"><div class="panel-heading"><div><h3>Recent orders</h3><p>Latest activity from the order ledger</p></div><a class="text-link" href="{{ url_for('sales') }}">View all →</a></div>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr></thead><tbody>
+  {% for o in recent_orders %}<tr><td class="fw-semibold">#{{ o.order_id }}</td><td>{{ o.customer_name }}</td><td>{{ o.order_date.strftime('%d %b %Y') if o.order_date else '' }}</td><td><span class="badge-status {{ o.status|lower }}">{{ o.status }}</span></td><td>{{ o.total_amount|inr }}</td></tr>{% else %}<tr><td colspan="5" class="empty-state">No orders found. Import the sample data to get started.</td></tr>{% endfor %}
+  </tbody></table></div></section>
+  <section class="panel"><div class="panel-heading"><div><h3>Stock watch</h3><p>Products at or below reorder level</p></div><a class="text-link" href="{{ url_for('inventory') }}">Inventory →</a></div>
+  {% for p in low_stock %}<div class="stock-watch-row"><div class="stock-product"><strong>{{ p.product_name }}</strong><small>Reorder at {{ p.reorder_level }} units</small></div><span class="stock-number {% if p.stock_qty == 0 %}text-danger{% endif %}">{{ p.stock_qty }} left</span></div>{% else %}<div class="empty-state">No low-stock products found.</div>{% endfor %}
+  </section>
+</div>
+{% endblock %}

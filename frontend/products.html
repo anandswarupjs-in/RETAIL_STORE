@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}{% block heading %}Products{% endblock %}
+{% block content %}
+<div class="page-intro"><div><h2>Product catalog</h2><p>Manage items, categories, pricing and supplier relationships.</p></div><button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addProduct">+ Add product</button></div>
+<div class="collapse mb-4" id="addProduct"><section class="panel"><h3>Add a product</h3><p class="muted">The AddProduct stored procedure creates the product and its inventory record in one operation.</p>
+<form method="post" class="form-grid">
+<input type="hidden" name="action" value="add">
+<div><label>Product name</label><input class="form-control" name="product_name" required></div>
+<div><label>Category</label><input class="form-control" name="category"></div>
+<div><label>Price (₹)</label><input class="form-control" type="number" name="price" min="0" step=".01" required></div>
+<div><label>Supplier</label><select class="form-select" name="supplier_id" required><option value="">Choose supplier</option>{% for s in suppliers %}<option value="{{ s.supplier_id }}">{{ s.supplier_name }}</option>{% endfor %}</select></div>
+<div><label>Initial stock</label><input class="form-control" type="number" name="stock_qty" min="0" value="0" required></div>
+<div class="form-action"><button class="btn btn-primary">Save product</button></div>
+</form></section></div>
+<section class="panel"><div class="panel-heading"><div><h3>All products</h3><p>{{ products|length }} catalog records</p></div><input class="form-control table-search" placeholder="Search products..." data-table-search="#productTable"></div>
+<div class="table-responsive"><table class="table align-middle" id="productTable"><thead><tr><th>ID</th><th>Product</th><th>Category</th><th>Supplier</th><th>Price</th><th>Stock</th><th>Update</th></tr></thead><tbody>
+{% for p in products %}<tr><td>{{ p.product_id }}</td><td class="fw-semibold">{{ p.product_name }}</td><td>{{ p.category or '—' }}</td><td>{{ p.supplier_name }}</td><td>{{ p.price|inr }}</td><td><span class="badge-status {% if p.stock_qty == 0 %}cancelled{% elif p.stock_qty <= p.reorder_level %}pending{% else %}completed{% endif %}">{{ p.stock_qty }}</span></td><td><details><summary class="text-link">Edit</summary><form method="post" class="inline-edit"><input type="hidden" name="action" value="update"><input type="hidden" name="product_id" value="{{ p.product_id }}"><input class="form-control form-control-sm" name="product_name" value="{{ p.product_name }}" required><input class="form-control form-control-sm" name="category" value="{{ p.category or '' }}" placeholder="Category"><input class="form-control form-control-sm" type="number" name="price" min="0" step=".01" value="{{ p.price }}" required><button class="btn btn-sm btn-primary">Update</button></form></details></td></tr>
+{% else %}<tr><td colspan="7" class="empty-state">No products found. Load the sample data or add a product.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}{% block heading %}Inventory{% endblock %}
+{% block content %}
+<div class="page-intro"><div><h2>Stock control</h2><p>Monitor stock levels and maintain reorder thresholds.</p></div></div>
+<section class="panel"><div class="panel-heading"><div><h3>Inventory ledger</h3><p>Stock changes are constrained by the database.</p></div><input class="form-control table-search" placeholder="Search inventory..." data-table-search="#inventoryTable"></div>
+<div class="table-responsive"><table class="table align-middle" id="inventoryTable"><thead><tr><th>Product</th><th>Available</th><th>Reorder level</th><th>Expiry</th><th>Status</th><th>Adjust stock</th></tr></thead><tbody>
+{% for i in inventory %}<tr><td class="fw-semibold">{{ i.product_name }}</td><td>{{ i.stock_qty }}</td><td>{{ i.reorder_level }}</td><td>{{ i.expiry_date or '—' }}</td><td><span class="badge-status {% if i.stock_status == 'OUT OF STOCK' %}cancelled{% elif i.stock_status == 'LOW STOCK' %}pending{% else %}completed{% endif %}">{{ i.stock_status }}</span></td><td><details><summary class="text-link">Edit stock</summary><form method="post" class="inline-edit"><input type="hidden" name="product_id" value="{{ i.product_id }}"><input class="form-control form-control-sm" type="number" name="stock_qty" min="0" value="{{ i.stock_qty }}" required><input class="form-control form-control-sm" type="number" name="reorder_level" min="0" value="{{ i.reorder_level }}" required><input class="form-control form-control-sm" type="date" name="expiry_date" value="{{ i.expiry_date or '' }}"><button class="btn btn-sm btn-primary">Save</button></form></details></td></tr>
+{% else %}<tr><td colspan="6" class="empty-state">No inventory records found.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
